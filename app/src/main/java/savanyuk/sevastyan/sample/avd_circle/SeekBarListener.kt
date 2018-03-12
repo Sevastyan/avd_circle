@@ -1,7 +1,6 @@
 package savanyuk.sevastyan.sample.avd_circle
 
 import android.widget.SeekBar
-import io.reactivex.subjects.CompletableSubject
 import io.reactivex.subjects.Subject
 
 

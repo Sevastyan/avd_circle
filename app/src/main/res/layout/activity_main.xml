@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     tools:context="savanyuk.sevastyan.sample.avd_circle.MainActivity">
 
-    <ImageView
+    <savanyuk.sevastyan.sample.avd_circle.ProgressCircle
         android:id="@+id/circle_drawable"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="16dp"
-        android:src="@drawable/avd_circle_progress"
+        android:src="@drawable/vd_circle_incomplete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
