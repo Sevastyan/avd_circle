@@ -5,8 +5,18 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'keyAlias'
+            keyPassword 'password'
+            storeFile file('/home/droid/AndroidStudioProjects/myGitHubRepos/avd_circle/keystore.jks')
+            storePassword 'password'
+        }
+    }
     compileSdkVersion 26
+    flavorDimensions "ui"
     defaultConfig {
+        dimension "ui"
         applicationId "savanyuk.sevastyan.sample.avd_circle"
         minSdkVersion 23
         targetSdkVersion 26
@@ -14,10 +24,61 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    productFlavors {
+        // since these are supposed to co-exist, define suffixes for applicationId and names.
+        develop {
+            dimension "ui"
+            // inherits from defaultConfig and can be omitted, but specified explicitly for easier reading.
+            applicationIdSuffix "${name}"
+            versionNameSuffix "-${dimension}:${name}"
+        }
+        demo {
+            dimension "ui"
+            versionNameSuffix "-${dimension}:${name}"
+        }
+        production {
+            dimension "ui"
+        }
+    }
     buildTypes {
-        release {
-            minifyEnabled false
+        debug {
+            versionNameSuffix "-buildType:${name}"
+            resValue("string", "app_name", "avd_circle-debug")
+            debuggable true
+            crunchPngs false
+        }
+        alpha {
+            versionNameSuffix "-buildType:${name}"
+            debuggable false
+            crunchPngs true
+            minifyEnabled true // note: stack traces will be obfuscated.
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            zipAlignEnabled true
+            resValue("string", "app_name", "avd_circle-alpha")
+            signingConfig signingConfigs.config
+        }
+        beta {
+            versionNameSuffix "-buildType:${name}"
+            resValue("string", "app_name", "avd_circle-beta")
+            initWith alpha
+        }
+        release {
+            versionNameSuffix ""
+            resValue("string", "app_name", "avd_circle")
+            initWith alpha
+        }
+    }
+    variantFilter { variant ->
+        def ui = variant.flavors[0].name
+        def buildType = variant.buildType.name
+        if (ui.equals("develop") &&
+                (buildType.equals("alpha") || buildType.equals("beta") || buildType.equals("release"))) {
+            variant.setIgnore(true)
+        }
+        if (ui.equals("demo") &&
+                (buildType.equals("beta") || buildType.equals("release"))) {
+            variant.setIgnore(true)
         }
     }
 }
@@ -32,9 +93,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     /* Because RxAndroid releases are few and far between, it is recommended you also
-        explicitly depend on RxJava's latest version for bug fixes and new features.
-        (see https://github.com/ReactiveX/RxJava/releases for latest 2.x.x version)*/
+                explicitly depend on RxJava's latest version for bug fixes and new features.
+                (see https://github.com/ReactiveX/RxJava/releases for latest 2.x.x version)*/
     implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
     implementation 'com.android.support:design:26.1.0'
-    compile "org.jetbrains.kotlin:kotlin-reflect:1.2.30"
+    compile 'org.jetbrains.kotlin:kotlin-reflect:1.2.30'
 }

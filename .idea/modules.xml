@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/avd_circle.iml" filepath="$PROJECT_DIR$/avd_circle.iml" />
-      <module fileurl="file://C:\Users\Sevastyan Savanyuk\AndroidStudioProjects\myGitHibRepos\avd_circle\avd_circle.iml" filepath="C:\Users\Sevastyan Savanyuk\AndroidStudioProjects\myGitHibRepos\avd_circle\avd_circle.iml" />
     </modules>
   </component>
 </project>
