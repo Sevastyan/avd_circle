@@ -4,13 +4,20 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+def appNames = new Properties()
+appNames.load(new FileInputStream(rootProject.file("app.names")))
+
 android {
     signingConfigs {
-        config {
-            keyAlias 'keyAlias'
-            keyPassword 'password'
-            storeFile file('/home/droid/AndroidStudioProjects/myGitHubRepos/avd_circle/keystore.jks')
-            storePassword 'password'
+        generalSigning {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['keystorePassword']
         }
     }
     compileSdkVersion 26
@@ -43,7 +50,13 @@ android {
     buildTypes {
         debug {
             versionNameSuffix "-buildType:${name}"
-            resValue("string", "app_name", "avd_circle-debug")
+            resValue("string", "app_name", appNames['debug'])
+            debuggable true
+            crunchPngs false
+        }
+        internal {
+            versionNameSuffix "-buildType:${name}"
+            resValue("string", "app_name", appNames['internal'])
             debuggable true
             crunchPngs false
         }
@@ -55,25 +68,27 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             shrinkResources true
             zipAlignEnabled true
-            resValue("string", "app_name", "avd_circle-alpha")
-            signingConfig signingConfigs.config
+            resValue("string", "app_name", appNames['alpha'])
+            signingConfig signingConfigs.generalSigning
         }
         beta {
-            versionNameSuffix "-buildType:${name}"
-            resValue("string", "app_name", "avd_circle-beta")
             initWith alpha
+            versionNameSuffix "-buildType:${name}"
+            resValue("string", "app_name", appNames['beta'])
+            signingConfig signingConfigs.generalSigning
         }
         release {
-            versionNameSuffix ""
-            resValue("string", "app_name", "avd_circle")
             initWith alpha
+            versionNameSuffix ""
+            resValue("string", "app_name", appNames['release'])
+            signingConfig signingConfigs.generalSigning
         }
     }
     variantFilter { variant ->
         def ui = variant.flavors[0].name
         def buildType = variant.buildType.name
         if (ui.equals("develop") &&
-                (buildType.equals("alpha") || buildType.equals("beta") || buildType.equals("release"))) {
+                (buildType.equals("internal") || buildType.equals("alpha") || buildType.equals("beta") || buildType.equals("release"))) {
             variant.setIgnore(true)
         }
         if (ui.equals("demo") &&
