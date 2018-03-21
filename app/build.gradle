@@ -11,6 +11,11 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 def appNames = new Properties()
 appNames.load(new FileInputStream(rootProject.file("app.names")))
 
+ext.versionMajor = 0
+ext.versionMinor = 1
+ext.versionPatch = 0
+ext.minSdkVersion = 24
+
 android {
     signingConfigs {
         generalSigning {
@@ -25,10 +30,10 @@ android {
     defaultConfig {
         dimension "ui"
         applicationId "savanyuk.sevastyan.sample.avd_circle"
-        minSdkVersion 23
+        minSdkVersion project.ext.minSdkVersion
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     productFlavors {
@@ -87,15 +92,37 @@ android {
     variantFilter { variant ->
         def ui = variant.flavors[0].name
         def buildType = variant.buildType.name
-        if (ui.equals("develop") &&
-                (buildType.equals("internal") || buildType.equals("alpha") || buildType.equals("beta") || buildType.equals("release"))) {
+        if (ui == "develop" &&
+                (buildType == "internal" || buildType == "alpha" || buildType == "beta" || buildType == "release")) {
             variant.setIgnore(true)
         }
-        if (ui.equals("demo") &&
-                (buildType.equals("beta") || buildType.equals("release"))) {
+        if (ui == "demo" &&
+                (buildType == "beta" || buildType == "release")) {
             variant.setIgnore(true)
         }
     }
+    sourceSets {
+        main {
+            java.srcDirs += "src/main/kotlin"
+        }
+        test {
+            java.srcDirs += "src/test/kotlin"
+        }
+        developDebug {
+            java.srcDirs += "src/developDebug/kotlin"
+        }
+        androidTest {
+            java.srcDirs += "src/androidTest/kotlin"
+        }
+    }
+}
+
+private Integer generateVersionCode() {
+    return ext.minSdkVersion * 1000000 + ext.versionMajor * 10000 + ext.versionMinor * 100 + ext.versionPatch
+}
+
+private String generateVersionName() {
+    return "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
 }
 
 dependencies {

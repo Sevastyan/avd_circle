@@ -4,8 +4,10 @@
 
     <supports-screens
         android:requiresSmallestWidthDp="720"
-        android:xlargeScreens="true" />
-
+        android:xlargeScreens="true"
+        android:smallScreens="false"
+        android:normalScreens="false"
+        android:largeScreens="false" />
 
     <application
         android:allowBackup="true"
